@@ -8,7 +8,7 @@ population, GDP, maps, weather, UNESCO sites, national parks, airports, and more
 ## Stack
 
 Next.js 15 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Framer Motion ·
-TanStack Query · React-Leaflet/OpenStreetMap · next-themes · Fuse.js
+TanStack Query · React-Leaflet/OpenStreetMap · globe.gl (Three.js) · next-themes · Fuse.js
 
 ## Routes
 
@@ -96,6 +96,9 @@ No API keys required, anywhere. Two kinds of data:
 - Timezones — [`countries-and-timezones`](https://github.com/manuelmhtr/countries-and-timezones) (IANA tz data)
 - Airports — [OurAirports](https://ourairports.com/data/) open dataset
 - Flags — [flagcdn.com](https://flagcdn.com/) (deterministic URLs, no fetch needed)
+- Homepage globe textures (day/night Earth, bump map) — re-compressed to WebP from the
+  [`three-globe`](https://github.com/vasturiano/three-globe) example assets (MIT,
+  NASA Blue Marble/Black Marble imagery), self-hosted in `public/globe/`
 
 Re-run the generators any time to refresh the snapshot:
 ```bash

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
-import { GlobeCanvas } from "@/components/hero/globe-canvas";
+import { RealisticGlobe } from "@/components/hero/realistic-globe";
 import { openGlobalSearch } from "@/lib/search-events";
 
 export function Hero({
@@ -14,15 +14,9 @@ export function Hero({
 }) {
   return (
     <section className="relative overflow-hidden border-b border-border/60">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/15 via-transparent to-transparent" />
-      <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-60">
-        <div className="size-[min(90vw,700px)]">
-          <GlobeCanvas className="size-full" />
-        </div>
-      </div>
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_55%_45%_at_center,_var(--color-background)_45%,_transparent_100%)]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
 
-      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-4 py-28 text-center sm:px-6 sm:py-36">
+      <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4 pt-20 text-center sm:px-6 sm:pt-28">
         <motion.span
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -69,6 +63,18 @@ export function Hero({
           </kbd>
         </motion.button>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.9, delay: 0.25 }}
+        className="relative z-0 mx-auto mt-8 h-[300px] w-full max-w-5xl overflow-hidden sm:mt-10 sm:h-[420px]"
+      >
+        <div className="absolute left-1/2 top-0 size-[620px] -translate-x-1/2 sm:size-[860px]">
+          <RealisticGlobe className="size-full" />
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-background sm:h-28" />
+      </motion.div>
     </section>
   );
 }
