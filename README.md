@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# World Atlas Explorer
 
-## Getting Started
+A fast, beautifully designed explorer for every country on Earth — flags, capitals,
+population, GDP, maps, weather, UNESCO sites, national parks, airports, and more.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Next.js 15 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Framer Motion ·
+TanStack Query · React-Leaflet/OpenStreetMap · next-themes · Fuse.js
+
+## Routes
+
+All routes below are statically prerendered (except the two marked dynamic) and were
+verified with a production build + `next start`. Replace `localhost:3000` with your
+deployed domain once it's live on Vercel.
+
+| Route | Description |
+|---|---|
+| [`/`](http://localhost:3000/) | Homepage — globe hero, search, browse-by sections, favorites/recently-viewed strips |
+| [`/country/fra`](http://localhost:3000/country/fra) | Country detail (France) — stats, map, weather, UNESCO, parks, cities, airports, gallery |
+| [`/country/jpn`](http://localhost:3000/country/jpn) | Country detail (Japan) |
+| [`/continent/asia`](http://localhost:3000/continent/asia) | Browse by continent (also: `africa`, `americas`, `antarctic`, `europe`, `oceania`) |
+| [`/browse/population`](http://localhost:3000/browse/population) | All countries ranked by population |
+| [`/browse/language`](http://localhost:3000/browse/language) | Language index |
+| [`/browse/language/eng`](http://localhost:3000/browse/language/eng) | Countries speaking a given language |
+| [`/browse/currency`](http://localhost:3000/browse/currency) | Currency index |
+| [`/browse/currency/USD`](http://localhost:3000/browse/currency/USD) | Countries using a given currency |
+| [`/compare`](http://localhost:3000/compare) | Side-by-side country comparison |
+| [`/favorites`](http://localhost:3000/favorites) | Saved countries (localStorage) |
+| `/api/weather?lat=&lon=` | Dynamic — live weather + sunrise/sunset for a coordinate |
+| `/api/images/[name]` | Dynamic — Wikipedia photo gallery for a country's common name |
+| `/api/countries?codes=FRA,DEU` | Dynamic — batch country lookup, used by favorites/recently-viewed/compare |
+
+`generateStaticParams` produces this at build time: 250 `/country/[code]`, 6
+`/continent/[name]`, ~155 `/browse/language/[code]`, and ~160 `/browse/currency/[code]`
+pages — 583 pages total, all static HTML.
+
+## Architecture
+
+```
+scripts/
+  generate-data.mjs       one-time/rerunnable: world-countries + World Bank + Wikidata
+                           → src/data/{countries,unesco,parks,elevation,cities}.json
+  generate-airports.mjs   OurAirports CSV → src/data/airports.json
+
+src/
+  data/*.json             build-time snapshot, imported directly by server code (never
+                           shipped to the client — only type-only imports cross that line)
+  lib/
+    types.ts              shared domain types (Country, HeritageSite, WeatherSnapshot, ...)
+    data/countries.ts     the only module that reads src/data/*.json; exposes typed
+                           getters (getCountryByCode, getCountriesByLanguage, ...)
+    format.ts             number/currency/area/GDP formatters
+    hooks/                client hooks: use-favorites, use-recently-viewed,
+                           use-compare-tray (all built on one localStorage primitive,
+                           use-local-list, via useSyncExternalStore so every component
+                           sharing a key re-renders in sync), use-weather,
+                           use-country-images, use-countries-by-codes
+  components/
+    hero/                 canvas-drawn rotating globe + hero search CTA
+    search/               ⌘K command palette (Fuse.js fuzzy search over all countries)
+    home/, shared/        homepage sections, CountryCard/CountryGrid used everywhere
+    country/              every section of the country detail page (map, weather,
+                           stats, UNESCO/parks lists, gallery, ...)
+    compare/               compare picker, slots, and the stat comparison table
+    ui/                    shadcn/ui primitives (Radix-based)
+  app/
+    page.tsx               homepage (server component, reads lib/data directly)
+    country/[code]/         country detail (SSG via generateStaticParams)
+    continent/[name]/,
+    browse/.../             the other SSG listing pages
+    compare/, favorites/    client-driven pages (localStorage state)
+    api/weather, api/images,
+    api/countries            the only three routes that do real request-time work
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Data flow.** Server components (`page.tsx` files) import `lib/data/countries.ts`
+directly and render fully static HTML — no client-side fetch for anything that doesn't
+change. Interactive state (favorites, recently-viewed, compare selections) lives in
+`localStorage` and is fetched back into full `Country` objects through the lightweight
+`/api/countries` route so the client bundle never has to carry the ~1.2 MB dataset.
+Weather and the photo gallery are the only things fetched live, through their own route
+handlers with `revalidate` caching, because they're the only things that actually
+change day to day.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Data
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+No API keys required, anywhere. Two kinds of data:
 
-## Learn More
+**Baked at build time** (`npm run generate:all`), into `src/data/*.json`:
+- Core country facts — [`world-countries`](https://github.com/mledoze/countries) (MIT)
+- Population & GDP — [World Bank Open Data API](https://data.worldbank.org/)
+- Coat of arms, driving side, capital coordinates, UNESCO World Heritage Sites,
+  national parks, elevation extremes, major cities — [Wikidata Query Service](https://query.wikidata.org/)
+- Timezones — [`countries-and-timezones`](https://github.com/manuelmhtr/countries-and-timezones) (IANA tz data)
+- Airports — [OurAirports](https://ourairports.com/data/) open dataset
+- Flags — [flagcdn.com](https://flagcdn.com/) (deterministic URLs, no fetch needed)
 
-To learn more about Next.js, take a look at the following resources:
+Re-run the generators any time to refresh the snapshot:
+```bash
+npm run generate:all   # or generate:data / generate:airports individually
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Fetched live at request time**, since it has to be current:
+- Weather + sunrise/sunset — [Open-Meteo](https://open-meteo.com/) (`/api/weather`)
+- Country photo gallery — Wikipedia's media-list + imageinfo APIs (`/api/images/[name]`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Wikidata is crowdsourced — UNESCO/park counts are a best effort (a documented
+heuristic excludes serial-site sub-components) and won't perfectly match official
+tallies for every country.
 
-## Deploy on Vercel
+## Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm install
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Build
+
+```bash
+npm run build
+npm run start
+```
+
+Fully static-generatable (`generateStaticParams` covers all countries, continents,
+languages, and currencies — 580+ pages prerendered at build time) and deploys to
+Vercel with zero configuration or environment variables.
