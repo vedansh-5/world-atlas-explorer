@@ -3,6 +3,8 @@
 A fast, beautifully designed explorer for every country on Earth — flags, capitals,
 population, GDP, maps, weather, UNESCO sites, national parks, airports, and more.
 
+**Live:** [world-atlas-explorer.vercel.app](https://world-atlas-explorer.vercel.app)
+
 ## Stack
 
 Next.js 15 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Framer Motion ·
@@ -10,23 +12,22 @@ TanStack Query · React-Leaflet/OpenStreetMap · next-themes · Fuse.js
 
 ## Routes
 
-All routes below are statically prerendered (except the two marked dynamic) and were
-verified with a production build + `next start`. Replace `localhost:3000` with your
-deployed domain once it's live on Vercel.
+All routes below are live on production and statically prerendered (except the three
+marked dynamic).
 
 | Route | Description |
 |---|---|
-| [`/`](http://localhost:3000/) | Homepage — globe hero, search, browse-by sections, favorites/recently-viewed strips |
-| [`/country/fra`](http://localhost:3000/country/fra) | Country detail (France) — stats, map, weather, UNESCO, parks, cities, airports, gallery |
-| [`/country/jpn`](http://localhost:3000/country/jpn) | Country detail (Japan) |
-| [`/continent/asia`](http://localhost:3000/continent/asia) | Browse by continent (also: `africa`, `americas`, `antarctic`, `europe`, `oceania`) |
-| [`/browse/population`](http://localhost:3000/browse/population) | All countries ranked by population |
-| [`/browse/language`](http://localhost:3000/browse/language) | Language index |
-| [`/browse/language/eng`](http://localhost:3000/browse/language/eng) | Countries speaking a given language |
-| [`/browse/currency`](http://localhost:3000/browse/currency) | Currency index |
-| [`/browse/currency/USD`](http://localhost:3000/browse/currency/USD) | Countries using a given currency |
-| [`/compare`](http://localhost:3000/compare) | Side-by-side country comparison |
-| [`/favorites`](http://localhost:3000/favorites) | Saved countries (localStorage) |
+| [`/`](https://world-atlas-explorer.vercel.app/) | Homepage — globe hero, search, browse-by sections, favorites/recently-viewed strips |
+| [`/country/fra`](https://world-atlas-explorer.vercel.app/country/fra) | Country detail (France) — stats, map, weather, UNESCO, parks, cities, airports, gallery |
+| [`/country/jpn`](https://world-atlas-explorer.vercel.app/country/jpn) | Country detail (Japan) |
+| [`/continent/asia`](https://world-atlas-explorer.vercel.app/continent/asia) | Browse by continent (also: `africa`, `americas`, `antarctic`, `europe`, `oceania`) |
+| [`/browse/population`](https://world-atlas-explorer.vercel.app/browse/population) | All countries ranked by population |
+| [`/browse/language`](https://world-atlas-explorer.vercel.app/browse/language) | Language index |
+| [`/browse/language/eng`](https://world-atlas-explorer.vercel.app/browse/language/eng) | Countries speaking a given language |
+| [`/browse/currency`](https://world-atlas-explorer.vercel.app/browse/currency) | Currency index |
+| [`/browse/currency/USD`](https://world-atlas-explorer.vercel.app/browse/currency/USD) | Countries using a given currency |
+| [`/compare`](https://world-atlas-explorer.vercel.app/compare) | Side-by-side country comparison |
+| [`/favorites`](https://world-atlas-explorer.vercel.app/favorites) | Saved countries (localStorage) |
 | `/api/weather?lat=&lon=` | Dynamic — live weather + sunrise/sunset for a coordinate |
 | `/api/images/[name]` | Dynamic — Wikipedia photo gallery for a country's common name |
 | `/api/countries?codes=FRA,DEU` | Dynamic — batch country lookup, used by favorites/recently-viewed/compare |
@@ -124,5 +125,11 @@ npm run start
 ```
 
 Fully static-generatable (`generateStaticParams` covers all countries, continents,
-languages, and currencies — 580+ pages prerendered at build time) and deploys to
+languages, and currencies — 583 pages prerendered at build time) and deploys to
 Vercel with zero configuration or environment variables.
+
+## Deployment
+
+Live at **[world-atlas-explorer.vercel.app](https://world-atlas-explorer.vercel.app)**,
+deployed via the Vercel CLI and connected to this GitHub repo for automatic deploys on
+push to `main`.
