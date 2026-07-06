@@ -99,6 +99,10 @@ No API keys required, anywhere. Two kinds of data:
 - Homepage globe textures (day/night Earth, bump map) — re-compressed to WebP from the
   [`three-globe`](https://github.com/vasturiano/three-globe) example assets (MIT,
   NASA Blue Marble/Black Marble imagery), self-hosted in `public/globe/`
+- Homepage globe country outlines — [`world-atlas`](https://github.com/topojson/world-atlas)
+  110m TopoJSON (ISC), self-hosted in `public/globe/countries-110m.json`, paired with a
+  generated `public/globe/country-code-map.json` (numeric ISO → `cca3`) so clicking a
+  country on the globe opens its `/country/[code]` page
 
 Re-run the generators any time to refresh the snapshot:
 ```bash

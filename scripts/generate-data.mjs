@@ -187,6 +187,20 @@ async function main() {
   await writeJson("elevation.json", Object.fromEntries(elevationByIso3));
   await writeJson("cities.json", Object.fromEntries(citiesByIso3));
 
+  const codeMap = Object.fromEntries(
+    countries
+      .filter((c) => c.ccn3)
+      .map((c) => [c.ccn3, { code: c.cca3, name: c.name.common }])
+  );
+  const publicGlobeDir = path.join(__dirname, "..", "public", "globe");
+  await mkdir(publicGlobeDir, { recursive: true });
+  await writeFile(
+    path.join(publicGlobeDir, "country-code-map.json"),
+    JSON.stringify(codeMap),
+    "utf-8"
+  );
+  console.log("  wrote public/globe/country-code-map.json");
+
   console.log("\nDone. Wrote countries.json, unesco.json, parks.json, elevation.json, cities.json");
 }
 

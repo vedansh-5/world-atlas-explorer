@@ -13,8 +13,8 @@ export function Hero({
   languageCount: number;
 }) {
   return (
-    <section className="relative overflow-hidden border-b border-border/60">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+    <section className="relative overflow-x-hidden border-b border-border/60">
+      <div className="absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
 
       <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4 pt-20 text-center sm:px-6 sm:pt-28">
         <motion.span
@@ -65,15 +65,15 @@ export function Hero({
       </div>
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, delay: 0.25 }}
-        className="relative z-0 mx-auto mt-8 h-[300px] w-full max-w-5xl overflow-hidden sm:mt-10 sm:h-[420px]"
+        className="relative z-0 mx-auto mb-16 mt-12 aspect-square w-full max-w-[320px] sm:mb-20 sm:mt-16 sm:max-w-[480px] md:max-w-[560px]"
       >
-        <div className="absolute left-1/2 top-0 size-[620px] -translate-x-1/2 sm:size-[860px]">
-          <RealisticGlobe className="size-full" />
-        </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-background sm:h-28" />
+        <RealisticGlobe className="size-full" />
+        <p className="pointer-events-none absolute inset-x-0 -bottom-8 text-center text-xs text-muted-foreground sm:-bottom-10">
+          Drag to rotate · click a country to explore
+        </p>
       </motion.div>
     </section>
   );
